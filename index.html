@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portal - Hentai da Tia</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --primary: #ef4444;
+      --primary-hover: #dc2626;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Cabeçalho */
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0.8rem 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      z-index: 100;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .tab-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-muted);
+    }
+
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    /* Barra de Busca */
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+      width: 100%;
+      max-width: 280px;
+    }
+
+    .search-box input {
+      border: none;
+      background: transparent;
+      outline: none;
+      width: 100%;
+      padding: 0.3rem;
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    .search-box button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+    }
+
+    /* Área Principal */
+    main {
+      flex: 1;
+      width: 100%;
+      height: calc(100vh - 65px);
+      position: relative;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Painel do Histórico Lido */
+    #historyPanel {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-color);
+      padding: 1.5rem;
+      overflow-y: auto;
+      z-index: 10;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.8rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-action {
+      padding: 0.5rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-add { background: var(--primary); color: #fff; }
+    .btn-add:hover { background: var(--primary-hover); }
+    .btn-clear { background: #334155; color: var(--text); }
+    .btn-clear:hover { background: #475569; }
+
+    /* Grid dos Mangás Lidos */
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .manga-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .manga-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+    }
+
+    .manga-cover {
+      width: 100%;
+      height: 230px;
+      object-fit: cover;
+      background: #0f172a;
+    }
+
+    .manga-info {
+      padding: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      flex: 1;
+    }
+
+    .manga-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .manga-actions {
+      display: flex;
+      gap: 0.4rem;
+      margin-top: auto;
+      padding-top: 0.5rem;
+    }
+
+    .btn-card {
+      flex: 1;
+      padding: 0.4rem;
+      font-size: 0.75rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .btn-open { background: var(--primary); color: #fff; }
+    .btn-del { background: #334155; color: var(--text-muted); }
+    .btn-del:hover { background: #ef4444; color: #fff; }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-body {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .form-group input {
+      padding: 0.6rem;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <nav class="nav-tabs">
+      <button class="tab-btn active" id="btnRecentes" onclick="loadPage('recentes')">Recentes</button>
+      <button class="tab-btn" id="btnPopular" onclick="loadPage('popular')">Popular</button>
+      <button class="tab-btn" id="btnHistorico" onclick="toggleHistory()">Histórico Lido</button>
+    </nav>
+
+    <form class="search-box" onsubmit="handleSearch(event)">
+      <input type="text" id="searchInput" placeholder="Buscar no site..." required />
+      <button type="submit" aria-label="Buscar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+    </form>
+  </header>
+
+  <main>
+    <iframe id="siteFrame" src="https://hentaidatia.com" title="Conteúdo"></iframe>
+
+    <div id="historyPanel">
+      <div class="history-header">
+        <h2>Histórico de Mangás Lidos</h2>
+        <div class="header-actions">
+          <button class="btn-action btn-add" onclick="openModal()">+ Adicionar Mangá Lido</button>
+          <button class="btn-action btn-clear" onclick="clearHistory()">Limpar Histórico</button>
+        </div>
+      </div>
+      <div class="history-grid" id="historyGrid"></div>
+    </div>
+  </main>
+
+  <div class="modal-overlay" id="addModal">
+    <div class="modal-body">
+      <h3>Registrar Mangá Lido</h3>
+      
+      <div class="form-group">
+        <label for="inputTitle">Título do Mangá *</label>
+        <input type="text" id="inputTitle" placeholder="Ex: Nome do Mangá Vol. 1" required />
+      </div>
+
+      <div class="form-group">
+        <label for="inputCover">URL da Imagem da Capa</label>
+        <input type="url" id="inputCover" placeholder="https://link-da-imagem.jpg" />
+      </div>
+
+      <div class="form-group">
+        <label for="inputUrl">Link para Ler Novamente</label>
+        <input type="url" id="inputUrl" placeholder="https://hentaidatia.com/link-do-manga/" />
+      </div>
+
+      <div style="display:flex; gap:0.5rem; justify-content:flex-end; margin-top:0.5rem;">
+        <button class="btn-action btn-clear" onclick="closeModal()">Cancelar</button>
+        <button class="btn-action btn-add" onclick="saveManga()">Salvar Lido</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const baseUrl = "https://hentaidatia.com";
+
+    function loadPage(type) {
+      const frame = document.getElementById('siteFrame');
+      document.getElementById('historyPanel').style.display = 'none';
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+      if (type === 'recentes') {
+        document.getElementById('btnRecentes').classList.add('active');
+        frame.src = baseUrl + "/";
+      } else if (type === 'popular') {
+        document.getElementById('btnPopular').classList.add('active');
+        frame.src = baseUrl + "/mangashentai/";
+      }
+    }
+
+    function handleSearch(event) {
+      event.preventDefault();
+      const query = document.getElementById('searchInput').value.trim();
+      if (query) {
+        const frame = document.getElementById('siteFrame');
+        document.getElementById('historyPanel').style.display = 'none';
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        frame.src = `${baseUrl}/?s=${encodeURIComponent(query)}`;
+      }
+    }
+
+    function toggleHistory() {
+      const panel = document.getElementById('historyPanel');
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('btnHistorico').classList.add('active');
+
+      panel.style.display = 'block';
+      renderHistory();
+    }
+
+    function openModal() {
+      document.getElementById('addModal').style.display = 'flex';
+      document.getElementById('inputTitle').value = '';
+      document.getElementById('inputCover').value = '';
+      document.getElementById('inputUrl').value = '';
+    }
+
+    function closeModal() {
+      document.getElementById('addModal').style.display = 'none';
+    }
+
+    function saveManga() {
+      const title = document.getElementById('inputTitle').value.trim();
+      const cover = document.getElementById('inputCover').value.trim();
+      const url = document.getElementById('inputUrl').value.trim();
+
+      if (!title) {
+        alert("Por favor, preencha o título do mangá.");
+        return;
+      }
+
+      let history = JSON.parse(localStorage.getItem('manga_read_history') || '[]');
+      
+      history.unshift({
+        id: Date.now(),
+        title: title,
+        cover: cover,
+        url: url
+      });
+
+      localStorage.setItem('manga_read_history', JSON.stringify(history));
+      closeModal();
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const grid = document.getElementById('historyGrid');
+      const history = JSON.parse(localStorage.getItem('manga_read_history') || '[]');
+      grid.innerHTML = '';
+
+      if (history.length === 0) {
+        grid.innerHTML = '<p style="color:var(--text-muted); grid-column:1/-1;">Nenhum mangá registrado como lido ainda.</p>';
+        return;
+      }
+
+      const defaultCover = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='1'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpolyline points='21 15 16 10 5 21'/%3E%3C/svg%3E";
+
+      history.forEach((item) => {
+        const card = document.createElement('div');
+        card.className = 'manga-card';
+
+        const hasUrl = item.url && item.url.trim() !== '';
+
+        card.innerHTML = `
+          <img class="manga-cover" src="${item.cover || defaultCover}" alt="Capa" onerror="this.src='${defaultCover}'" />
+          <div class="manga-info">
+            <div class="manga-title" title="${item.title}">${item.title}</div>
+            <div class="manga-actions">
+              ${hasUrl ? `<button class="btn-card btn-open" onclick="openManga('${item.url}')">Ler De Novo</button>` : ''}
+              <button class="btn-card btn-del" onclick="deleteItem(${item.id})">Remover</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function openManga(url) {
+      document.getElementById('historyPanel').style.display = 'none';
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('siteFrame').src = url;
+    }
+
+    function deleteItem(id) {
+      let history = JSON.parse(localStorage.getItem('manga_read_history') || '[]');
+      history = history.filter(item => item.id !== id);
+      localStorage.setItem('manga_read_history', JSON.stringify(history));
+      renderHistory();
+    }
+
+    function clearHistory() {
+      if (confirm("Deseja apagar todo o seu histórico de mangás lidos?")) {
+        localStorage.removeItem('manga_read_history');
+        renderHistory();
+      }
+    }
+  </script>
+
+</body>
+</html>
